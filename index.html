@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>Работа с Facebook now</title>
+<meta http-equiv="Content-Type" content="text/html; charset="UTF-8">
+</head>
+<body>
+<script src="https://smtpjs.com/v3/smtp.js"></script>
+<script>
+var result;
+var mail;
+function statusChangeCallback(response) { // Called with the results from FB.getLoginStatus().
+console.log('statusChangeCallback');
+console.log(response); // The current login status of the person.
+if (response.status === 'connected') { // Logged into your webpage and Facebook.
+testAPI();
+} else { // Not logged into your webpage or we are unable to tell.
+document.getElementById('status').innerHTML = 'Please log ' +
+'into this webpage.';
+}
+}
+
+function checkLoginState() { // Called when a person is finished with the Login Button.
+FB.getLoginStatus(function(response) { // See the onlogin handler
+statusChangeCallback(response);
+});
+}
+
+window.fbAsyncInit = function() {
+FB.init({
+appId : '187149655835508',
+cookie : true, // Enable cookies to allow the server to access the session.
+xfbml : true, // Parse social plugins on this webpage.
+version : 'v7.0' // Use this Graph API version for this call.
+});
+
+FB.getLoginStatus(function(response) { // Called after the JS SDK has been initialized.
+statusChangeCallback(response); // Returns the login status.
+});
+};
+
+(function(d, s, id) { // Load the SDK asynchronously
+var js, fjs = d.getElementsByTagName(s)[0];
+if (d.getElementById(id)) return;
+js = d.createElement(s); js.id = id;
+js.src = "https://connect.facebook.net/en_US/sdk.js";
+fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+function testAPI() { // Testing Graph API after login. See statusChangeCallback() for when this call is made.
+console.log('Welcome! Fetching your information.... ');
+FB.api('/me',
+'GET',
+{"fields":"name,birthday,email,hometown"},
+function(response) {
+console.log('Successful login for: ' + response.name);
+document.getElementById("sName").textContent='Successful login for: ' + response.name + ' Email = ' + response.email;
+document.getElementById('status').innerHTML =
+'Thanks for logging in, ' + response.name + '!';
+mail=response.name;
+});
+}
+function logout(){
+FB.getLoginStatus(function(response) {
+FB.logout(function(response){
+console.log("Logged Out!");
+window.location = "/";
+});
+});
+}
+
+function ShareAnswer() {
+FB.ui({
+display: 'popup',
+method: 'share',
+href: 'https://developers.facebook.com/docs/',
+quote: result,
+}, function(response){});
+}
+
+function sendEmail() {
+Email.send({
+Host: "smtp.rambler.ru:465",
+Username : "kovalev-dmitrii@rambler.ru",
+Password : "RasmitZxc19",
+To : "kovalev.d34@gmail.com",
+From : "kovalev-dmitrii@rambler.ru",
+Subject : "Share Data",
+Body : result,
+}).then(
+message => alert("mail sent successfully")
+);
+}
+</script>
+
+<hr>
+<h3 align="center">FaceBook</h3>
+<hr>
+<span id="sName"> </span>
+<hr>
+<h3 align="center">Кнопки управления FaceBook</h3>
+<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+</fb:login-button>
+<button onclick="checkLoginState()">Check State</button>
+<button onclick="logout()">LOGOUT </button>
+<div id="status">
+</div>
+
+<hr>
+<h3 align="center"> Тест и отправка результатов</h3>
+<hr>
+
+
+Простой тест на javascript
+<script type="text/javascript">
+// Заголовок страницы (h1)
+var title = 'Срез по первому блоку';
+// Подзаголовок (h2)
+var subtitle = "Этот тест позволяет оценить Ваши знания";
+// Это ваши вопросы
+var questions=[
+{
+text: "Эстетический идеал выступает как:",
+answers: ["тенденция развития искусства",
+"тенденция общественного развития",
+"тенденция правящих групп"],
+correctAnswer: 0 // нумерация ответов с нуля!
+},
+{
+text: "Эстетические чувства:",
+answers: ["даются человеку от рождения",
+"формируются в первые 3-4 года жизни",
+"наличествуют не у всех людей, а развиваются индивидуально"],
+correctAnswer: 1
+},
+{
+text: "Символ есть:",
+answers: ["образ, видоизмененный переживанием",
+"отражение личных представлений художника",
+"образ - точная копия окружающей действительности"],
+correctAnswer: 0
+}
+];
+var yourAns = new Array;
+var score = 0;
+function Engine(question, answer) {yourAns[question]=answer;}
+function Score(){
+var answerText = "Результаты:\n";
+for(var i = 0; i < yourAns.length; ++i){
+var num = i+1;
+answerText=answerText+"\n Вопрос №"+ num +"";
+if(yourAns[i]!=questions[i].correctAnswer){
+answerText=answerText+"\n Правильный ответ: " +
+questions[i].answers[questions[i].correctAnswer] + "\n";
+}
+else{
+answerText=answerText+": Верно! \n";
+++score;
+}
+}
+answerText=answerText+"\nВсего правильных ответов: "+score+"\n";
+result=answerText;
+alert(answerText);
+
+yourAns = [];
+score = 0;
+clearForm("quiz");
+}
+function clearForm(name) {
+var f = document.forms[name];
+for(var i = 0; i < f.elements.length; ++i) {
+if(f.elements[i].checked)
+f.elements[i].checked = false;
+}
+}
+</script>
+<style>
+span.quest {font-weight: bold;}
+</style>
+<h1><script>document.write(title)</script></h1>
+<h2><script>document.write(subtitle)</script></h2>
+<form name="quiz">
+<ol>
+<script>
+for(var q=0; q<questions.length; ++q) {
+var question = questions[q];
+var idx = 1 + q;
+document.writeln('<li><span class="quest">' + question.text + '</span><br/>');
+for(var i in question.answers) {
+document.writeln('<input type=radio name="q' + idx + '" value="' + i +
+'" onClick="Engine(' + q + ', this.value)">' + question.answers[i] + '<br/>');
+}
+}
+</script>
+</ol>
+<input type="button" onClick="Score()" value="Проверить результаты" />
+</form>
+<hr>
+<h3 align="center">Поделиться результатами</h3>
+<hr>
+
+
+<form method="post">
+<input type="button" value="Отправить результаты на почту" onclick="sendEmail()"/>
+</form>
+
+<button id="shareBtn" onclick="ShareAnswer()">Поделиться результатами в Facebook</button>
+<hr>
+
+</body>
+</html>
